@@ -1,15 +1,40 @@
 version: '3.8'
-services:
 
-  frontend:
-    container_name: frontend
-    build: .
-    volumes:
-      - './:/usr/src/app'
-      - '/usr/src/app/node_modules'
-    ports:
-      - 3000:3000
-    stdin_open: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    command: npm start
+services:
+    dev:
+        container_name: react-app-dev
+        image: react-app-dev:1.0.0
+        build:
+            context: .
+            target: build-stage
+            dockerfile: ./Dockerfile
+        volumes:
+            - './:/usr/src/app'
+            - '/usr/src/app/node_modules'
+        networks:
+            - reactapp-network    
+        ports:
+            - 3000:3000
+        stdin_open: true
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+        command: npm start
+    prod:
+        container_name: react-app-prod
+        image: react-app-prod:1.0.0
+        stdin_open: true
+        build:
+            context: .
+            target: production
+            dockerfile: ./Dockerfile
+        expose:
+            - 8080
+        ports:
+            - 8080:80
+        networks:
+            - reactapp-network
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+
+networks:
+    reactapp-network:
